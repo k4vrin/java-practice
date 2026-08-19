@@ -1,0 +1,35 @@
+# Gradle
+.gradle/
+**/build/
+
+# Compiled Java output
+*.class
+out/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Local machine configuration
+local.properties
+
+# Logs and operating-system metadata
+*.log
+.DS_Store
+Thumbs.db
