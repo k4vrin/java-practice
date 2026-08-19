@@ -1,5 +1,6 @@
 package org.example.task_import;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -10,6 +11,10 @@ public record ImportedTask(
         int priority,
         List<String> labels
 ) {
+
+    static Comparator<ImportedTask> COMPARATOR = Comparator.comparing(ImportedTask::priority)
+            .reversed()
+            .thenComparing(ImportedTask::id);
 
     public ImportedTask {
         Objects.requireNonNull(id, "id is null");
