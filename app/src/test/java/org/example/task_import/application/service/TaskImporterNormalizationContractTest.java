@@ -1,13 +1,18 @@
-package org.example.task_import;
+package org.example.task_import.application.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.example.task_import.application.port.outbound.TaskRowSource;
+import org.example.task_import.domain.ImportedTask;
+import org.example.task_import.domain.TaskImportPlan;
+import org.example.task_import.domain.TaskRow;
+import org.example.task_import.support.TaskImporterTestSupport;
 import org.junit.jupiter.api.Test;
 
-class ImperativeTaskImporterNormalizationTest {
+abstract class TaskImporterNormalizationContractTest extends TaskImporterTestSupport {
 
     @Test
     void trimsTitleWhitespace() {
@@ -150,7 +155,7 @@ class ImperativeTaskImporterNormalizationTest {
 
     @Test
     void importsExactlyOneTaskForOneValidRow() {
-        TaskImportPlan plan = new ImperativeTaskImporter().importTasks(sourceOf(List.of(
+        TaskImportPlan plan = newImporter().importTasks(sourceOf(List.of(
                 new TaskRow(taskId(16), "Task", 0, List.of("backend"))
         )));
 
@@ -180,8 +185,8 @@ class ImperativeTaskImporterNormalizationTest {
         assertEquals(List.of("backend", "bug", "urgent"), task.labels());
     }
 
-    private static ImportedTask importSingle(TaskRow row) {
-        TaskImportPlan plan = new ImperativeTaskImporter().importTasks(sourceOf(List.of(row)));
+    private ImportedTask importSingle(TaskRow row) {
+        TaskImportPlan plan = newImporter().importTasks(sourceOf(List.of(row)));
 
         assertEquals(1, plan.getTasks().size());
         return plan.getTasks().get(0);

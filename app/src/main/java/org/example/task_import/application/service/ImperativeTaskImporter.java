@@ -1,21 +1,36 @@
-package org.example.task_import;
+package org.example.task_import.application.service;
 
 import java.io.IOException;
 import java.util.*;
+import org.example.task_import.application.exception.TaskImportException;
+import org.example.task_import.application.exception.TaskImportValidationException;
+import org.example.task_import.application.port.in.TaskImporter;
+import org.example.task_import.application.port.outbound.TaskRowSource;
+import org.example.task_import.domain.ImportedTask;
+import org.example.task_import.domain.TaskImportPlan;
+import org.example.task_import.domain.TaskRow;
 
+import static org.example.task_import.application.exception.TaskImportValidationException.validationError;
+
+/** Loop-based implementation of the task-import input port. */
 public class ImperativeTaskImporter implements TaskImporter {
+
+    /** Creates the imperative importer. */
+    public ImperativeTaskImporter() {
+    }
 
     @Override
     public TaskImportPlan importTasks(TaskRowSource source) {
+        Objects.requireNonNull(source, "source is null");
         List<TaskRow> taskRows;
         try {
-            taskRows = source.load();
+            taskRows = Objects.requireNonNull(source.load(), "TaskRowSource.load returned null");
         } catch (IOException e) {
-            throw new TaskImportException("Import tasks failed", e);
+            throw new TaskImportException("Task import failed while loading task rows", e);
         }
 
         List<ImportedTask> importedTasks = new ArrayList<>();
-        List<String> aggLabels = new ArrayList<>();
+        Set<String> aggLabels = new LinkedHashSet<>();
         Set<UUID> taskIds = new HashSet<>();
 
         for (int i = 0; i < taskRows.size(); i++) {
@@ -54,7 +69,7 @@ public class ImperativeTaskImporter implements TaskImporter {
                 var lowerCaseLabel = trimmedLabel.toLowerCase(Locale.ROOT);
                 norLabels.add(lowerCaseLabel);
             }
-            aggLabels.addAll(norLabels);
+
             importedTasks.add(
                     new ImportedTask(
                             taskRow.id(),
@@ -66,20 +81,10 @@ public class ImperativeTaskImporter implements TaskImporter {
         }
         importedTasks.sort(ImportedTask.COMPARATOR);
 
-        return new TaskImportPlan(importedTasks, aggLabels);
-    }
+        for (ImportedTask task : importedTasks) {
+            aggLabels.addAll(task.labels());
+        }
 
-    private TaskImportValidationException validationError(
-            int rowIndex,
-            UUID taskId,
-            String field,
-            String reason
-    ) {
-        return new TaskImportValidationException(
-                "Task import validation failed: row=" + rowIndex
-                        + ", taskId=" + taskId
-                        + ", field=" + field
-                        + ", reason=" + reason
-        );
+        return new TaskImportPlan(importedTasks, List.copyOf(aggLabels));
     }
 }

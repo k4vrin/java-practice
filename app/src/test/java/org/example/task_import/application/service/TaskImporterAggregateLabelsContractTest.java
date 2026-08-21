@@ -1,12 +1,16 @@
-package org.example.task_import;
+package org.example.task_import.application.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.UUID;
+import org.example.task_import.application.port.outbound.TaskRowSource;
+import org.example.task_import.domain.TaskImportPlan;
+import org.example.task_import.domain.TaskRow;
+import org.example.task_import.support.TaskImporterTestSupport;
 import org.junit.jupiter.api.Test;
 
-class ImperativeTaskImporterAggregateLabelsTest {
+abstract class TaskImporterAggregateLabelsContractTest extends TaskImporterTestSupport {
 
     @Test
     void labelsFollowFinalSortedTaskOrder() {
@@ -74,8 +78,8 @@ class ImperativeTaskImporterAggregateLabelsTest {
         }
     }
 
-    private static TaskImportPlan importTasks(List<TaskRow> rows) {
-        return new ImperativeTaskImporter().importTasks(sourceOf(rows));
+    private TaskImportPlan importTasks(List<TaskRow> rows) {
+        return newImporter().importTasks(sourceOf(rows));
     }
 
     private static TaskRow taskRow(long id, int priority, List<String> labels) {

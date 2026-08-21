@@ -1,4 +1,4 @@
-package org.example.task_import;
+package org.example.task_import.application.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -6,9 +6,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import org.example.task_import.application.exception.TaskImportValidationException;
+import org.example.task_import.application.port.outbound.TaskRowSource;
+import org.example.task_import.domain.TaskRow;
+import org.example.task_import.support.TaskImporterTestSupport;
 import org.junit.jupiter.api.Test;
 
-class ImperativeTaskImporterTest {
+abstract class TaskImporterValidationContractTest extends TaskImporterTestSupport {
 
     @Test
     void rejectsNullRow() {
@@ -144,16 +148,16 @@ class ImperativeTaskImporterTest {
 
     @Test
     void acceptsNegativeAndVeryLargePriorities() {
-        assertDoesNotThrow(() -> new ImperativeTaskImporter().importTasks(sourceOf(List.of(
+        assertDoesNotThrow(() -> newImporter().importTasks(sourceOf(List.of(
                 new TaskRow(taskId(15), "Negative priority", -1, List.of()),
                 new TaskRow(taskId(16), "Large priority", Integer.MAX_VALUE, List.of())
         ))));
     }
 
-    private static TaskImportValidationException assertValidationFailure(List<TaskRow> rows) {
+    private TaskImportValidationException assertValidationFailure(List<TaskRow> rows) {
         TaskImportValidationException exception = assertThrows(
                 TaskImportValidationException.class,
-                () -> new ImperativeTaskImporter().importTasks(sourceOf(rows))
+                () -> newImporter().importTasks(sourceOf(rows))
         );
 
         assertEquals(TaskImportValidationException.class, exception.getClass());

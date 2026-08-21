@@ -18,7 +18,7 @@ Keep the book, notes, previous implementations, and answer material closed while
 
 - Project: `/Users/kavrin/Projects/java-learning/java-practice`
 - Java: 21
-- Package: `org.example.task_import`
+- Module root: `org.example.task_import`
 - Testing: the project's existing JUnit and Gradle setup
 - Do not add external dependencies.
 
