@@ -18,19 +18,22 @@ public final class TransferRequest {
             List<String> labels
     ) {
         if (amountCents <= 0) {
-            throw new IllegalArgumentException("amountCents must not be negative or zero");
+            throw new IllegalArgumentException("amountCents must be greater than zero");
         }
-        if (labels == null || labels.stream().anyMatch((label) -> {return label == null || label.isBlank();})) {
-            throw new IllegalArgumentException("transferId can not be nul or empty");
+        if (labels == null || labels.stream().anyMatch(label -> label == null || label.isBlank())) {
+            throw new IllegalArgumentException("labels must not be null or contain blank values");
         }
         if (transferId == null || transferId.isBlank()) {
-            throw new IllegalArgumentException("transferId can not be nul or empty");
+            throw new IllegalArgumentException("transferId must not be null or blank");
         }
         if (sourceAccountId == null || sourceAccountId.isBlank()) {
-            throw new IllegalArgumentException("sourceAccountId can not be nul or empty");
+            throw new IllegalArgumentException("sourceAccountId must not be null or blank");
         }
         if (destinationAccountId == null || destinationAccountId.isBlank()) {
-            throw new IllegalArgumentException("transferId can not be nul or empty");
+            throw new IllegalArgumentException("destinationAccountId must not be null or blank");
+        }
+        if (sourceAccountId.equals(destinationAccountId)) {
+            throw new IllegalArgumentException("source and destination accounts must differ");
         }
 
         this.transferId = transferId;
@@ -57,7 +60,7 @@ public final class TransferRequest {
     }
 
     public List<String> labels() {
-        return List.copyOf(labels);
+        return labels;
     }
 
     @Override
