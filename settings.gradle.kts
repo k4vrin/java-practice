@@ -12,3 +12,4 @@ plugins {
 
 rootProject.name = "java-practice"
 include("app")
+include("interview-api")
